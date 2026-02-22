@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Estimez vos économies potentielles sur vos achats d'articles promotionnels avec Approviz.">
+    <title>Estimateur d'Économies — Approviz</title>
+
+    <!-- Préconnexion Google Fonts : réduit la latence de chargement de la police -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Meta Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', 'VOTRE_PIXEL_ID');
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=VOTRE_PIXEL_ID&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+<body>
+
+    <header id="site-header">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-brand">Approviz</span>
+            </div>
+            <p class="header-tagline">Estimateur d'Économies</p>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- Section héro / introduction -->
+        <section id="hero-section" aria-labelledby="hero-title">
+            <div class="section-inner">
+                <h1 id="hero-title">Combien pourriez-vous économiser ?</h1>
+                <p class="hero-subtitle">Répondez à quelques questions simples et découvrez vos économies potentielles en passant par Approviz.</p>
+            </div>
+        </section>
+
+        <!-- Section principale : formulaire + produits -->
+        <section id="estimator-section" aria-labelledby="estimator-title">
+            <div class="section-inner">
+                <h2 id="estimator-title" class="sr-only">Configurez votre estimation</h2>
+
+                <div id="estimator-layout">
+
+                    <!-- Colonne gauche : Formulaire -->
+                    <div id="form-container">
+                        <form id="estimator-form" novalidate>
+
+                            <fieldset id="fieldset-company">
+                                <legend>Votre entreprise</legend>
+
+                                <div class="form-group">
+                                    <label for="nbEmployes">Nombre d'employés</label>
+                                    <input
+                                        type="number"
+                                        id="nbEmployes"
+                                        name="nbEmployes"
+                                        min="1"
+                                        step="1"
+                                        placeholder="Ex : 25"
+                                        required
+                                        aria-describedby="nbEmployes-hint"
+                                    >
+                                    <span id="nbEmployes-hint" class="field-hint">Nombre total d'employés sur le terrain et au bureau.</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="tauxHoraire">Taux horaire moyen ($)</label>
+                                    <input
+                                        type="number"
+                                        id="tauxHoraire"
+                                        name="tauxHoraire"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Ex : 28.00"
+                                        required
+                                        aria-describedby="tauxHoraire-hint"
+                                    >
+                                    <span id="tauxHoraire-hint" class="field-hint">Salaire horaire brut moyen de vos employés.</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="heuresMensuelles">Heures consacrées aux achats (par mois)</label>
+                                    <input
+                                        type="number"
+                                        id="heuresMensuelles"
+                                        name="heuresMensuelles"
+                                        min="0"
+                                        step="0.5"
+                                        placeholder="Ex : 8"
+                                        required
+                                        aria-describedby="heuresMensuelles-hint"
+                                    >
+                                    <span id="heuresMensuelles-hint" class="field-hint">Temps mensuel passé à rechercher, commander et gérer vos articles promotionnels.</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="frequence">Fréquence de commande</label>
+                                    <select id="frequence" name="frequence" required aria-describedby="frequence-hint">
+                                        <option value="" disabled selected>Sélectionnez une fréquence</option>
+                                        <option value="1">1 commande par année</option>
+                                        <option value="2">2 commandes par année</option>
+                                        <option value="4">1 commande par trimestre</option>
+                                        <option value="12">1 commande par mois</option>
+                                    </select>
+                                    <span id="frequence-hint" class="field-hint">À quelle fréquence commandez-vous des articles promotionnels ?</span>
+                                </div>
+
+                            </fieldset>
+
+                            <button type="submit" id="calculate-btn">
+                                Calculer mes économies
+                            </button>
+
+                        </form>
+                    </div>
+
+                    <!-- Colonne droite : Grille de produits -->
+                    <div id="visual-container">
+                        <div class="visual-header">
+                            <h3>Quels articles commandez-vous ?</h3>
+                            <p class="visual-subtitle">Sélectionnez tous les types d'articles promotionnels que vous achetez.</p>
+                        </div>
+
+                        <div id="product-grid" role="group" aria-label="Sélection des produits">
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-vetements">
+                                    <input type="checkbox" id="product-vetements" name="products" value="vetements">
+                                    <img src="assets/products/vetements.png" alt="Vêtements de travail" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Vêtements de travail</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-casques">
+                                    <input type="checkbox" id="product-casques" name="products" value="casques">
+                                    <img src="assets/products/casques.png" alt="Casques de chantier" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Casques de chantier</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-stylos">
+                                    <input type="checkbox" id="product-stylos" name="products" value="stylos">
+                                    <img src="assets/products/stylos.png" alt="Stylos & papeterie" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Stylos & papeterie</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-sacs">
+                                    <input type="checkbox" id="product-sacs" name="products" value="sacs">
+                                    <img src="assets/products/sacs.png" alt="Sacs & accessoires" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Sacs & accessoires</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-mugs">
+                                    <input type="checkbox" id="product-mugs" name="products" value="mugs">
+                                    <img src="assets/products/mugs.png" alt="Mugs & bouteilles" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Mugs & bouteilles</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-gadgets">
+                                    <input type="checkbox" id="product-gadgets" name="products" value="gadgets">
+                                    <img src="assets/products/gadgets.png" alt="Gadgets & technologie" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Gadgets & technologie</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-enseignes">
+                                    <input type="checkbox" id="product-enseignes" name="products" value="enseignes">
+                                    <img src="assets/products/enseignes.png" alt="Enseignes & signalétique" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Enseignes & signalétique</span>
+                                </label>
+                            </div>
+
+                            <div class="product-card">
+                                <label class="product-label" for="product-autre">
+                                    <input type="checkbox" id="product-autre" name="products" value="autre">
+                                    <img src="assets/products/autre.png" alt="Autre" class="product-img" loading="lazy" decoding="async" width="64" height="64">
+                                    <span class="product-name">Autre</span>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Section des résultats (cachée par défaut) -->
+        <section id="results-section" aria-labelledby="results-title" aria-live="polite" hidden>
+            <div class="section-inner">
+
+                <div id="results-container">
+                    <h2 id="results-title">Vos économies estimées</h2>
+                    <p class="results-intro">Voici ce que vous pourriez économiser en passant par Approviz.</p>
+
+                    <div id="results-grid">
+
+                        <article class="result-card" id="admin-savings-card">
+                            <h3 class="result-label">Économies administratives</h3>
+                            <p class="result-description">Temps libéré de la gestion des commandes</p>
+                            <p class="result-value" id="admin-savings" aria-live="polite">—</p>
+                            <span class="result-unit">par année</span>
+                        </article>
+
+                        <article class="result-card" id="product-savings-card">
+                            <h3 class="result-label">Économies sur les produits</h3>
+                            <p class="result-description">Réduction sur le coût d'achat des articles</p>
+                            <p class="result-value" id="product-savings" aria-live="polite">—</p>
+                            <span class="result-unit">par année</span>
+                        </article>
+
+                        <article class="result-card result-card--total" id="total-savings-card">
+                            <h3 class="result-label">Économies totales estimées</h3>
+                            <p class="result-description">Combinaison de toutes vos économies</p>
+                            <p class="result-value" id="total-savings" aria-live="polite">—</p>
+                            <span class="result-unit">par année</span>
+                        </article>
+
+                    </div>
+
+                    <div id="results-cta">
+                        <p class="cta-text">Prêt à concrétiser ces économies ?</p>
+                        <a href="#" id="cta-button" class="btn-primary">Contactez un conseiller Approviz</a>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="site-footer">
+        <div class="footer-inner">
+            <p class="footer-legal">© <span id="current-year"></span> Approviz. Tous droits réservés.</p>
+            <p class="footer-disclaimer">Les estimations fournies sont indicatives et peuvent varier selon votre situation réelle.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+
+</body>
+</html>
