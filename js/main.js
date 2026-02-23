@@ -9,7 +9,7 @@
    1. ÉCONOMIES UNITAIRES PAR PRODUIT ($ par employé par commande)
    -------------------------------------------------------------------------- */
 
-var economieUnitaire = {
+var economiesUnitaires = {
     tshirt:          7,
     hoodie:         12,
     crewneck:       10,
@@ -50,7 +50,7 @@ function calculerEconomies(params) {
 
     // Étape 3 : économies sur les produits
     var economiesProduits = articlesSelectionnes.reduce(function(total, article) {
-        var unitaire = economieUnitaire[article] || 0;
+        var unitaire = economiesUnitaires[article] || 0;
         return total + (unitaire * nbEmployes);
     }, 0) * frequence;
 
