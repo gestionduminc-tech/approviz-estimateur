@@ -1,82 +1,213 @@
-// js/main.js
-// Contrôleur principal : connecte l'interface utilisateur à la logique de calcul.
-// Aucune logique de calcul ici — uniquement la gestion du DOM et des événements.
+/* ==========================================================================
+   APPROVIZ — Estimateur d'Économies v2
+   js/main.js
+   ========================================================================== */
 
-import { calculateSavings } from './model.js';
+'use strict';
 
-// ─── Utilitaires ──────────────────────────────────────────────────────────────
+/* --------------------------------------------------------------------------
+   1. ÉCONOMIES UNITAIRES PAR PRODUIT ($ par employé par commande)
+   -------------------------------------------------------------------------- */
+
+var economieUnitaire = {
+    tshirt:          7,
+    hoodie:         12,
+    crewneck:       10,
+    manteau:        50,
+    mancheLongue:   10,
+    hoodieZipper:   20,
+    tuque:          10,
+    casquetteBrodee: 10
+};
+
+/* --------------------------------------------------------------------------
+   2. FORMULE DE CALCUL
+   -------------------------------------------------------------------------- */
+
+/**
+ * Calcule les économies estimées selon les paramètres du formulaire.
+ *
+ * @param {object} params
+ * @param {number}   params.nbEmployes         - Nombre d'employés
+ * @param {number}   params.tauxHoraire        - Taux horaire moyen ($)
+ * @param {number}   params.heuresMensuelles   - Heures/mois consacrées aux achats
+ * @param {number}   params.frequence          - Nombre de commandes par année
+ * @param {string[]} params.articlesSelectionnes - Clés des produits cochés
+ * @returns {{ economiesAdmin: number, economiesProduits: number, totalEconomies: number }}
+ */
+function calculerEconomies(params) {
+    var nbEmployes          = params.nbEmployes;
+    var tauxHoraire         = params.tauxHoraire;
+    var heuresMensuelles    = params.heuresMensuelles;
+    var frequence           = params.frequence;
+    var articlesSelectionnes = params.articlesSelectionnes;
+
+    // Étape 1 : coût administratif annuel
+    var coutAdmin = heuresMensuelles * tauxHoraire * 12;
+
+    // Étape 2 : économies sur le temps administratif (70 % récupéré)
+    var economiesAdmin = coutAdmin * 0.70;
+
+    // Étape 3 : économies sur les produits
+    var economiesProduits = articlesSelectionnes.reduce(function(total, article) {
+        var unitaire = economieUnitaire[article] || 0;
+        return total + (unitaire * nbEmployes);
+    }, 0) * frequence;
+
+    // Étape 4 : total
+    var totalEconomies = economiesAdmin + economiesProduits;
+
+    return {
+        economiesAdmin:    Math.round(economiesAdmin),
+        economiesProduits: Math.round(economiesProduits),
+        totalEconomies:    Math.round(totalEconomies)
+    };
+}
+
+/* --------------------------------------------------------------------------
+   3. FORMATAGE DE LA DEVISE
+   -------------------------------------------------------------------------- */
 
 /**
  * Formate un nombre en devise canadienne-française.
- * Ex: 12345.6 → "12 346 $"
+ * Ex : 12345 → "12 345 $"
  *
- * @param {number} amount
+ * @param {number} montant
  * @returns {string}
  */
-function formatCurrency(amount) {
+function formaterDevise(montant) {
     return new Intl.NumberFormat('fr-CA', {
         style: 'currency',
         currency: 'CAD',
-        maximumFractionDigits: 0,
-    }).format(amount);
+        maximumFractionDigits: 0
+    }).format(montant);
 }
 
-// ─── Sélection des éléments du DOM ───────────────────────────────────────────
+/* --------------------------------------------------------------------------
+   4. ANIMATION DU COMPTEUR
+   -------------------------------------------------------------------------- */
 
-const form              = document.getElementById('estimator-form');
-const inputNbEmployes   = document.getElementById('nbEmployes');
-const inputTauxHoraire  = document.getElementById('tauxHoraire');
-const inputHeures       = document.getElementById('heuresMensuelles');
-const selectFrequence   = document.getElementById('frequence');
-const productCheckboxes = document.querySelectorAll('#product-grid input[type="checkbox"]');
-const calculateBtn      = document.getElementById('calculate-btn');
+/**
+ * Anime un élément HTML de 0 jusqu'à valeurFinale sur 1,5 seconde.
+ * Utilise une courbe ease-out pour un effet fluide et naturel.
+ * Respecte la préférence "prefers-reduced-motion".
+ *
+ * @param {HTMLElement} element      - L'élément dont le contenu est animé.
+ * @param {number}      valeurFinale - La valeur cible.
+ * @param {number}      [duree]      - Durée en ms (défaut : 1500).
+ */
+function animerCompteur(element, valeurFinale, duree) {
+    duree = duree || 1500;
 
-const resultsSection   = document.getElementById('results-section');
-const resultsContainer = document.getElementById('results-container');
-const elAdminSavings   = document.getElementById('admin-savings');
-const elProductSavings = document.getElementById('product-savings');
-const elTotalSavings   = document.getElementById('total-savings');
+    // Respect de la préférence système : pas d'animation
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        element.textContent = formaterDevise(valeurFinale);
+        return;
+    }
 
-const currentYearEl    = document.getElementById('current-year');
+    var startTime = null;
 
-// ─── Initialisation ───────────────────────────────────────────────────────────
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
 
-// Année courante dans le footer
+    function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+
+        var elapsed  = timestamp - startTime;
+        var progress = Math.min(elapsed / duree, 1);
+        var eased    = easeOutCubic(progress);
+        var valeurActuelle = Math.round(valeurFinale * eased);
+
+        element.textContent = formaterDevise(valeurActuelle);
+
+        if (progress < 1) {
+            requestAnimationFrame(step);
+        } else {
+            element.textContent = formaterDevise(valeurFinale);
+        }
+    }
+
+    requestAnimationFrame(step);
+}
+
+/* --------------------------------------------------------------------------
+   5. SÉLECTION DES ÉLÉMENTS DU DOM
+   -------------------------------------------------------------------------- */
+
+var form               = document.getElementById('estimator-form');
+var inputNbEmployes    = document.getElementById('nbEmployes');
+var inputTauxHoraire   = document.getElementById('tauxHoraire');
+var inputHeures        = document.getElementById('heuresMensuelles');
+var selectFrequence    = document.getElementById('frequence');
+var productCards       = document.querySelectorAll('.product-card');
+var productCheckboxes  = document.querySelectorAll('#product-grid input[type="checkbox"]');
+var calculateBtn       = document.getElementById('calculate-btn');
+
+var resultsSection     = document.getElementById('results-section');
+var elAdminSavings     = document.getElementById('admin-savings');
+var elProductSavings   = document.getElementById('product-savings');
+var elTotalSavings     = document.getElementById('total-savings');
+
+var productsError      = document.getElementById('products-error');
+var currentYearEl      = document.getElementById('current-year');
+
+/* --------------------------------------------------------------------------
+   6. INITIALISATION
+   -------------------------------------------------------------------------- */
+
+// Année dans le footer
 if (currentYearEl) {
     currentYearEl.textContent = new Date().getFullYear();
 }
 
-// Bouton désactivé par défaut — activé dès que les champs requis sont valides
-calculateBtn.disabled = true;
+/* --------------------------------------------------------------------------
+   7. INTERACTION DES CARTES PRODUITS
+   Synchronise l'état visuel (classe is-selected) avec la checkbox native.
+   -------------------------------------------------------------------------- */
 
-// ─── Gestion des erreurs de champ ─────────────────────────────────────────────
+productCards.forEach(function(card) {
+    var checkbox = card.querySelector('input[type="checkbox"]');
+    if (!checkbox) return;
+
+    // Clic sur la carte entière toggle la checkbox et la classe visuelle
+    card.addEventListener('click', function(event) {
+        // Évite le double-toggle si le clic vient directement de la checkbox
+        if (event.target === checkbox) return;
+
+        checkbox.checked = !checkbox.checked;
+        card.classList.toggle('is-selected', checkbox.checked);
+    });
+
+    // Si le clic vient de la checkbox elle-même (navigateur clavier / label)
+    checkbox.addEventListener('change', function() {
+        card.classList.toggle('is-selected', checkbox.checked);
+    });
+});
+
+/* --------------------------------------------------------------------------
+   8. GESTION DES ERREURS DE CHAMPS
+   -------------------------------------------------------------------------- */
 
 /**
- * Marque un champ comme invalide et affiche un message d'erreur sous l'input.
+ * Affiche un message d'erreur sous un champ de formulaire.
  *
- * @param {HTMLElement} inputEl  - Le champ input ou select concerné.
- * @param {string}      message  - Le message d'erreur à afficher.
+ * @param {HTMLElement} inputEl  - Le champ concerné.
+ * @param {string}      message  - Le texte d'erreur.
  */
-function setFieldError(inputEl, message) {
-    const group = inputEl.closest('.form-group');
+function afficherErreurChamp(inputEl, message) {
+    var group = inputEl.closest('.form-group');
     if (!group) return;
 
     inputEl.classList.add('is-invalid');
     inputEl.setAttribute('aria-invalid', 'true');
 
-    // Crée le message d'erreur s'il n'existe pas encore
-    let errorEl = group.querySelector('.field-error-msg');
+    var errorEl = group.querySelector('.field-error');
     if (!errorEl) {
         errorEl = document.createElement('span');
-        errorEl.className = 'field-error-msg';
+        errorEl.className = 'field-error';
         errorEl.setAttribute('role', 'alert');
-        // Insère après le hint existant, ou en dernier dans le groupe
-        const hint = group.querySelector('.field-hint');
-        if (hint) {
-            hint.after(errorEl);
-        } else {
-            group.appendChild(errorEl);
-        }
+        group.appendChild(errorEl);
     }
     errorEl.textContent = message;
 }
@@ -86,281 +217,157 @@ function setFieldError(inputEl, message) {
  *
  * @param {HTMLElement} inputEl
  */
-function clearFieldError(inputEl) {
-    const group = inputEl.closest('.form-group');
+function effacerErreurChamp(inputEl) {
+    var group = inputEl.closest('.form-group');
     if (!group) return;
 
     inputEl.classList.remove('is-invalid');
     inputEl.removeAttribute('aria-invalid');
 
-    const errorEl = group.querySelector('.field-error-msg');
+    var errorEl = group.querySelector('.field-error');
     if (errorEl) errorEl.remove();
 }
 
-/**
- * Efface toutes les erreurs du formulaire.
- */
-function clearAllErrors() {
-    [inputNbEmployes, inputTauxHoraire, inputHeures, selectFrequence].forEach(clearFieldError);
+/** Efface toutes les erreurs du formulaire. */
+function effacerToutesLesErreurs() {
+    [inputNbEmployes, inputTauxHoraire, inputHeures, selectFrequence].forEach(effacerErreurChamp);
 }
 
-// ─── Validation ───────────────────────────────────────────────────────────────
+/* --------------------------------------------------------------------------
+   9. VALIDATION DU FORMULAIRE
+   -------------------------------------------------------------------------- */
 
 /**
- * Vérifie que les champs principaux ont des valeurs positives valides.
- * Utilisé pour activer/désactiver le bouton en temps réel.
+ * Valide les données avant le calcul.
+ * Affiche les messages d'erreur inline sur les champs invalides.
  *
- * @returns {boolean}
+ * @param {object}   formData              - Données lues du formulaire.
+ * @param {string[]} articlesSelectionnes  - Produits cochés.
+ * @returns {boolean} true si tout est valide.
  */
-function areMainFieldsValid() {
-    const nb     = parseFloat(inputNbEmployes.value);
-    const taux   = parseFloat(inputTauxHoraire.value);
-    const heures = parseFloat(inputHeures.value);
-
-    return nb > 0 && taux >= 0 && heures >= 0 &&
-           !isNaN(nb) && !isNaN(taux) && !isNaN(heures);
-}
-
-/**
- * Valide l'ensemble du formulaire avant le calcul.
- * Affiche les messages d'erreur sur les champs concernés.
- *
- * @param {{ nbEmployes: number, tauxHoraire: number, heuresMensuelles: number, frequence: number }} formData
- * @param {string[]} articlesSelectionnes
- * @returns {boolean} true si tout est valide, false sinon.
- */
-function validateInputs(formData, articlesSelectionnes) {
-    let isValid = true;
+function validerFormulaire(formData, articlesSelectionnes) {
+    var estValide = true;
 
     // Nombre d'employés
-    if (!formData.nbEmployes || formData.nbEmployes <= 0 || isNaN(formData.nbEmployes)) {
-        setFieldError(inputNbEmployes, 'Veuillez entrer un nombre d'employés valide (minimum 1).');
-        isValid = false;
+    if (!formData.nbEmployes || isNaN(formData.nbEmployes) || formData.nbEmployes < 1) {
+        afficherErreurChamp(inputNbEmployes, 'Veuillez entrer un nombre d\'employés valide (minimum 1).');
+        estValide = false;
     } else {
-        clearFieldError(inputNbEmployes);
+        effacerErreurChamp(inputNbEmployes);
     }
 
     // Taux horaire
     if (isNaN(formData.tauxHoraire) || formData.tauxHoraire < 0) {
-        setFieldError(inputTauxHoraire, 'Veuillez entrer un taux horaire valide (0 $ ou plus).');
-        isValid = false;
+        afficherErreurChamp(inputTauxHoraire, 'Veuillez entrer un taux horaire valide (0 $ ou plus).');
+        estValide = false;
     } else {
-        clearFieldError(inputTauxHoraire);
+        effacerErreurChamp(inputTauxHoraire);
     }
 
     // Heures mensuelles
     if (isNaN(formData.heuresMensuelles) || formData.heuresMensuelles < 0) {
-        setFieldError(inputHeures, 'Veuillez entrer un nombre d'heures valide (0 ou plus).');
-        isValid = false;
+        afficherErreurChamp(inputHeures, 'Veuillez entrer un nombre d\'heures valide (0 ou plus).');
+        estValide = false;
     } else {
-        clearFieldError(inputHeures);
+        effacerErreurChamp(inputHeures);
     }
 
     // Fréquence
     if (!formData.frequence || isNaN(formData.frequence) || formData.frequence <= 0) {
-        setFieldError(selectFrequence, 'Veuillez sélectionner une fréquence de commande.');
-        isValid = false;
+        afficherErreurChamp(selectFrequence, 'Veuillez sélectionner une fréquence de commande.');
+        estValide = false;
     } else {
-        clearFieldError(selectFrequence);
+        effacerErreurChamp(selectFrequence);
     }
 
     // Au moins un produit sélectionné
     if (articlesSelectionnes.length === 0) {
-        showProductsError('Veuillez sélectionner au moins un type d'article.');
-        isValid = false;
+        productsError.textContent = 'Veuillez sélectionner au moins un type d\'article.';
+        productsError.removeAttribute('hidden');
+        estValide = false;
     } else {
-        clearProductsError();
+        productsError.setAttribute('hidden', '');
     }
 
-    return isValid;
+    return estValide;
 }
 
-// ─── Erreur de sélection de produits ─────────────────────────────────────────
+/* --------------------------------------------------------------------------
+   10. LECTURE DES DONNÉES DU FORMULAIRE
+   -------------------------------------------------------------------------- */
 
-/**
- * Affiche un message d'erreur sous la grille de produits.
- *
- * @param {string} message
- */
-function showProductsError(message) {
-    const grid = document.getElementById('product-grid');
-    if (!grid) return;
-
-    let errorEl = document.getElementById('products-error-msg');
-    if (!errorEl) {
-        errorEl = document.createElement('p');
-        errorEl.id = 'products-error-msg';
-        errorEl.className = 'products-error-msg';
-        errorEl.setAttribute('role', 'alert');
-        grid.after(errorEl);
-    }
-    errorEl.textContent = message;
-}
-
-/**
- * Efface le message d'erreur de la grille de produits.
- */
-function clearProductsError() {
-    const errorEl = document.getElementById('products-error-msg');
-    if (errorEl) errorEl.remove();
-}
-
-// ─── Lecture des données du formulaire ───────────────────────────────────────
-
-/**
- * Lit les valeurs brutes du formulaire et les convertit en nombres.
- *
- * @returns {{ nbEmployes: number, tauxHoraire: number, heuresMensuelles: number, frequence: number }}
- */
-function getFormData() {
+function lireFormulaire() {
     return {
-        nbEmployes:       parseFloat(inputNbEmployes.value),
-        tauxHoraire:      parseFloat(inputTauxHoraire.value),
-        heuresMensuelles: parseFloat(inputHeures.value),
-        frequence:        parseInt(selectFrequence.value, 10),
+        nbEmployes:          parseFloat(inputNbEmployes.value),
+        tauxHoraire:         parseFloat(inputTauxHoraire.value),
+        heuresMensuelles:    parseFloat(inputHeures.value),
+        frequence:           parseInt(selectFrequence.value, 10)
     };
 }
 
-/**
- * Retourne un tableau des valeurs des checkboxes cochées.
- * NOTE : les valeurs doivent correspondre aux clés de config.js
- * (tshirt, hoodie, crewneck, etc.).
- *
- * @returns {string[]}
- */
-function getSelectedProducts() {
+function lireArticlesSelectionnes() {
     return Array.from(productCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value);
+        .filter(function(cb) { return cb.checked; })
+        .map(function(cb) { return cb.value; });
 }
 
-// ─── Activation du bouton en temps réel ──────────────────────────────────────
+/* --------------------------------------------------------------------------
+   11. AFFICHAGE DES RÉSULTATS
+   -------------------------------------------------------------------------- */
 
 /**
- * Met à jour l'état du bouton selon la validité des champs principaux.
- */
-function updateButtonState() {
-    calculateBtn.disabled = !areMainFieldsValid();
-}
-
-// Écoute les saisies sur les 3 champs qui contrôlent l'état du bouton
-[inputNbEmployes, inputTauxHoraire, inputHeures].forEach(input => {
-    input.addEventListener('input', updateButtonState);
-});
-
-// ─── Animation de compteur ────────────────────────────────────────────────────
-
-/**
- * Anime un élément de 0 jusqu'à `finalValue` sur une durée donnée.
- * Utilise requestAnimationFrame et une courbe ease-out cubique pour
- * une progression fluide et naturelle (rapide au départ, lente à la fin).
+ * Affiche la section résultats et remplit les valeurs calculées.
+ * L'économie totale s'anime avec le compteur sur 1,5 seconde.
  *
- * @param {HTMLElement} element     - L'élément dont le contenu sera animé.
- * @param {number}      finalValue  - La valeur cible à atteindre.
- * @param {number}      [duration]  - Durée de l'animation en ms (défaut : 1500).
+ * @param {{ economiesAdmin: number, economiesProduits: number, totalEconomies: number }} resultats
  */
-function animateCounter(element, finalValue, duration = 1500) {
-    // Respecte la préférence système "mouvement réduit" —
-    // affiche la valeur finale immédiatement sans animation.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        element.textContent = formatCurrency(finalValue);
-        return;
-    }
+function afficherResultats(resultats) {
+    // Valeurs instantanées pour les deux premières cartes
+    elAdminSavings.textContent   = formaterDevise(resultats.economiesAdmin);
+    elProductSavings.textContent = formaterDevise(resultats.economiesProduits);
 
-    let startTime = null;
+    // Valeur initiale zéro pour la carte totale (sera animée)
+    elTotalSavings.textContent = formaterDevise(0);
 
-    /**
-     * Courbe ease-out cubique : décélère progressivement vers la fin.
-     * @param {number} t - Progression normalisée entre 0 et 1.
-     * @returns {number}
-     */
-    function easeOutCubic(t) {
-        return 1 - Math.pow(1 - t, 3);
-    }
-
-    function step(timestamp) {
-        if (!startTime) startTime = timestamp;
-
-        const elapsed  = timestamp - startTime;
-        const progress = Math.min(elapsed / duration, 1); // clamp à 1
-        const eased    = easeOutCubic(progress);
-
-        const currentValue = Math.round(finalValue * eased);
-        element.textContent = formatCurrency(currentValue);
-
-        if (progress < 1) {
-            requestAnimationFrame(step);
-        } else {
-            // Valeur finale exacte (évite les arrondis de fin d'animation)
-            element.textContent = formatCurrency(finalValue);
-        }
-    }
-
-    requestAnimationFrame(step);
-}
-
-// ─── Affichage des résultats ──────────────────────────────────────────────────
-
-/**
- * Met à jour l'interface avec les résultats calculés et révèle la section résultats.
- * Les économies admin et produits s'affichent instantanément.
- * Les économies totales s'animent avec un effet de compteur.
- *
- * @param {{ adminSavings: number, productSavings: number, totalSavings: number }} results
- */
-function displayResults(results) {
-    // Affichage immédiat des deux premières cartes
-    elAdminSavings.textContent   = formatCurrency(results.adminSavings);
-    elProductSavings.textContent = formatCurrency(results.productSavings);
-
-    // Valeur initiale à zéro — sera animée après révélation
-    elTotalSavings.textContent = formatCurrency(0);
-
-    // Rendre la section visible (retire l'attribut HTML `hidden`)
+    // Révèle la section (retire l'attribut hidden du HTML)
     resultsSection.removeAttribute('hidden');
 
-    // Déclencher l'animation CSS, puis lancer le compteur une fois visible
-    requestAnimationFrame(() => {
-        resultsContainer.classList.add('visible');
+    // Lance le compteur avec un léger délai pour laisser l'entrée CSS se déclencher
+    setTimeout(function() {
+        animerCompteur(elTotalSavings, resultats.totalEconomies, 1500);
+    }, 250);
 
-        // Léger délai pour que l'animation d'entrée CSS commence en premier
-        setTimeout(() => {
-            animateCounter(elTotalSavings, results.totalSavings);
-        }, 300);
-    });
-
-    // Défiler vers les résultats
+    // Défilement fluide vers les résultats
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ─── Gestion de la soumission du formulaire ───────────────────────────────────
+/* --------------------------------------------------------------------------
+   12. SOUMISSION DU FORMULAIRE
+   -------------------------------------------------------------------------- */
 
-form.addEventListener('submit', (event) => {
+form.addEventListener('submit', function(event) {
     event.preventDefault();
 
     // 1. Lire les données brutes
-    const formData = getFormData();
-    const articlesSelectionnes = getSelectedProducts();
+    var formData             = lireFormulaire();
+    var articlesSelectionnes = lireArticlesSelectionnes();
 
     // 2. Valider — stoppe si invalide
-    if (!validateInputs(formData, articlesSelectionnes)) return;
+    if (!validerFormulaire(formData, articlesSelectionnes)) return;
 
-    // 3. Tout est valide : effacer les erreurs résiduelles
-    clearAllErrors();
-    clearProductsError();
+    // 3. Tout est valide : effacer les éventuelles erreurs résiduelles
+    effacerToutesLesErreurs();
+    productsError.setAttribute('hidden', '');
 
     // 4. Calculer
-    const results = calculateSavings({ ...formData, articlesSelectionnes });
+    var resultats = calculerEconomies({
+        nbEmployes:          formData.nbEmployes,
+        tauxHoraire:         formData.tauxHoraire,
+        heuresMensuelles:    formData.heuresMensuelles,
+        frequence:           formData.frequence,
+        articlesSelectionnes: articlesSelectionnes
+    });
 
     // 5. Afficher
-    displayResults(results);
-
-    // 6. Tracking Meta Pixel — événement de conversion Lead
-    if (typeof fbq !== 'undefined') {
-        fbq('track', 'Lead', {
-            content_name: 'EstimateCalculated',
-            value: results.totalSavings,
-            currency: 'CAD',
-        });
-    }
+    afficherResultats(resultats);
 });

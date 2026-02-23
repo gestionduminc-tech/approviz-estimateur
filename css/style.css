@@ -1,48 +1,29 @@
 /* ==========================================================================
-   APPROVIZ — Estimateur d'Économies
+   APPROVIZ — Estimateur d'Économies v2
    css/style.css
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. VARIABLES & TOKENS
+   1. VARIABLES CSS
    -------------------------------------------------------------------------- */
 
-/* Note : la police Inter est chargée via <link> dans le HTML (plus performant que @import) */
-
 :root {
-    /* Couleurs — Brand */
-    --color-primary:       #1A3C6E;   /* Bleu marine profond */
-    --color-primary-dark:  #122B52;   /* Bleu marine foncé (hover) */
-    --color-accent:        #F5A623;   /* Orange vif */
-    --color-accent-dark:   #D4891A;   /* Orange foncé (hover) */
+    /* Palette de couleurs */
+    --color-green:      #109154;   /* Vert Approviz */
+    --color-orange:     #F39C12;   /* Orange Vif (CTA) */
+    --color-navy:       #1A2332;   /* Bleu Marine (Fond) */
+    --color-off-white:  #F5F5F5;   /* Blanc Cassé (Texte sur fond sombre) */
+    --color-dark-gray:  #212121;   /* Gris Foncé (Texte sur fond clair) */
 
-    /* Couleurs — Neutres */
-    --color-bg:            #F5F6F8;   /* Fond page */
-    --color-surface:       #FFFFFF;   /* Cartes, formulaires */
-    --color-border:        #E2E6EC;   /* Bordures subtiles */
-    --color-border-focus:  #1A3C6E;   /* Bordure active */
+    /* Couleurs fonctionnelles */
+    --color-bg-page:    #F0F2F5;
+    --color-surface:    #FFFFFF;
+    --color-border:     #E0E4EA;
+    --color-error:      #DC2626;
 
-    /* Couleurs — Texte */
-    --color-text-primary:  #111827;   /* Corps principal */
-    --color-text-secondary:#4B5563;   /* Labels, hints */
-    --color-text-muted:    #9CA3AF;   /* Placeholders */
-    --color-text-inverse:  #FFFFFF;   /* Sur fond sombre */
-
-    /* Couleurs — Statut */
-    --color-success:       #10B981;
-    --color-total-bg:      #1A3C6E;
-    --color-total-text:    #FFFFFF;
-
-    /* Typographie */
-    --font-family:         'Inter', system-ui, -apple-system, sans-serif;
-    --font-size-xs:        0.75rem;    /* 12px */
-    --font-size-sm:        0.875rem;   /* 14px */
-    --font-size-base:      1rem;       /* 16px */
-    --font-size-lg:        1.125rem;   /* 18px */
-    --font-size-xl:        1.25rem;    /* 20px */
-    --font-size-2xl:       1.5rem;     /* 24px */
-    --font-size-3xl:       1.875rem;   /* 30px */
-    --font-size-4xl:       2.25rem;    /* 36px */
+    /* Typographies */
+    --font-title:  'Poppins', system-ui, sans-serif;
+    --font-body:   'Lato', system-ui, sans-serif;
 
     /* Espacements */
     --space-1:   0.25rem;
@@ -55,29 +36,22 @@
     --space-10:  2.5rem;
     --space-12:  3rem;
     --space-16:  4rem;
-    --space-20:  5rem;
 
     /* Bordures */
-    --radius-sm:   4px;
-    --radius-md:   8px;
-    --radius-lg:   12px;
-    --radius-xl:   16px;
-    --radius-full: 9999px;
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  16px;
 
     /* Ombres */
-    --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md:  0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
-    --shadow-lg:  0 10px 30px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
-    --shadow-focus: 0 0 0 3px rgba(26,60,110,0.20);
+    --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md:  0 4px 20px rgba(0, 0, 0, 0.12);
+    --shadow-lg:  0 8px 40px rgba(0, 0, 0, 0.16);
 
     /* Transitions */
-    --transition-fast:   150ms ease;
-    --transition-base:   250ms ease;
-    --transition-slow:   400ms ease;
+    --transition: 200ms ease;
 
     /* Layout */
-    --max-width:       1200px;
-    --section-padding: var(--space-12) var(--space-6);
+    --max-width: 1280px;
 }
 
 
@@ -99,11 +73,11 @@ html {
 }
 
 body {
-    font-family: var(--font-family);
-    font-size: var(--font-size-base);
+    font-family: var(--font-body);
+    font-size: 1rem;
     line-height: 1.6;
-    color: var(--color-text-primary);
-    background-color: var(--color-bg);
+    color: var(--color-dark-gray);
+    background-color: var(--color-bg-page);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -126,7 +100,13 @@ textarea {
     font-size: inherit;
 }
 
-/* Accessibilité : masqué visuellement mais lisible par les lecteurs d'écran */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+/* Accessibilité */
 .sr-only {
     position: absolute;
     width: 1px;
@@ -139,49 +119,27 @@ textarea {
     border: 0;
 }
 
-
-/* --------------------------------------------------------------------------
-   3. TYPOGRAPHIE
-   -------------------------------------------------------------------------- */
-
-h1, h2, h3, h4, h5, h6 {
-    line-height: 1.25;
-    font-weight: 700;
-    color: var(--color-text-primary);
+:focus-visible {
+    outline: 3px solid var(--color-orange);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
 }
 
-h1 { font-size: var(--font-size-3xl); }
-h2 { font-size: var(--font-size-2xl); }
-h3 { font-size: var(--font-size-xl); }
-
-p {
-    color: var(--color-text-secondary);
-    line-height: 1.7;
+:focus:not(:focus-visible) {
+    outline: none;
 }
 
 
 /* --------------------------------------------------------------------------
-   4. LAYOUT UTILITAIRES
-   -------------------------------------------------------------------------- */
-
-.section-inner {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: var(--section-padding);
-}
-
-
-/* --------------------------------------------------------------------------
-   5. HEADER
+   3. HEADER
    -------------------------------------------------------------------------- */
 
 #site-header {
-    background-color: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-navy);
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 .header-inner {
@@ -194,251 +152,233 @@ p {
     gap: var(--space-4);
 }
 
-.logo-brand {
-    font-size: var(--font-size-xl);
-    font-weight: 800;
-    color: var(--color-primary);
-    letter-spacing: -0.02em;
+.header-logo img {
+    height: 44px;
+    width: auto;
+    display: block;
+    /* Fallback couleur si l'image ne charge pas */
+    background-color: transparent;
 }
 
-.header-tagline {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: var(--color-text-secondary);
+.header-title {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-off-white);
+    letter-spacing: -0.01em;
     text-align: right;
 }
 
-
-/* --------------------------------------------------------------------------
-   6. SECTION HÉRO
-   -------------------------------------------------------------------------- */
-
-#hero-section {
-    background: linear-gradient(135deg, var(--color-primary) 0%, #2C5282 100%);
-    color: var(--color-text-inverse);
-}
-
-#hero-section .section-inner {
-    padding-top: var(--space-16);
-    padding-bottom: var(--space-16);
-    text-align: center;
-}
-
-#hero-title {
-    font-size: var(--font-size-3xl);
-    font-weight: 800;
-    color: var(--color-text-inverse);
-    letter-spacing: -0.03em;
-    margin-bottom: var(--space-4);
-}
-
-.hero-subtitle {
-    font-size: var(--font-size-lg);
-    color: rgba(255, 255, 255, 0.80);
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.7;
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 0.9rem;
+    }
 }
 
 
 /* --------------------------------------------------------------------------
-   7. SECTION ESTIMATEUR (LAYOUT 2 COLONNES)
+   4. SECTION ESTIMATEUR — LAYOUT 2 COLONNES
    -------------------------------------------------------------------------- */
 
 #estimator-section {
-    background-color: var(--color-bg);
+    padding: var(--space-10) var(--space-6);
 }
 
-#estimator-section .section-inner {
-    padding-top: var(--space-12);
-    padding-bottom: var(--space-12);
-}
-
-/* Mobile : colonne unique */
-#estimator-layout {
+.estimator-layout {
+    max-width: var(--max-width);
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
 }
 
-/* Desktop : 2 colonnes, 45% / 55% */
+/* Desktop : 2 colonnes à partir de 1024px */
 @media (min-width: 1024px) {
-    #estimator-layout {
+    .estimator-layout {
         flex-direction: row;
         align-items: flex-start;
         gap: var(--space-10);
     }
 
+    /* Formulaire : ~40% de la largeur, sticky */
     #form-container {
-        flex: 0 0 42%;
+        flex: 0 0 400px;
         position: sticky;
-        top: calc(64px + var(--space-6));
+        top: calc(68px + var(--space-6));
     }
 
-    #visual-container {
+    /* Grille produits : prend le reste */
+    #products-container {
         flex: 1;
+        min-width: 0;
     }
 }
 
 
 /* --------------------------------------------------------------------------
-   8. FORMULAIRE
+   5. FORMULAIRE
    -------------------------------------------------------------------------- */
 
 #form-container {
     background-color: var(--color-surface);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
-    overflow: hidden;
-}
-
-#estimator-form {
     padding: var(--space-8);
 }
 
-fieldset {
-    border: none;
-    padding: 0;
-    margin: 0 0 var(--space-6);
+.form-heading {
+    font-size: 1.5rem;
+    color: var(--color-navy);
+    margin-bottom: var(--space-2);
 }
 
-legend {
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-6);
-    padding-bottom: var(--space-3);
-    border-bottom: 2px solid var(--color-accent);
-    width: 100%;
-    display: block;
+.form-subheading {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: var(--space-8);
+    line-height: 1.5;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    margin-bottom: var(--space-5);
-}
-
-.form-group:last-of-type {
-    margin-bottom: 0;
+    margin-bottom: var(--space-6);
 }
 
 label {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-dark-gray);
     letter-spacing: 0.01em;
 }
 
 input[type="number"],
 select {
     width: 100%;
-    padding: var(--space-3) var(--space-4);
+    padding: 0.75rem 1rem;
     border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background-color: var(--color-bg);
-    color: var(--color-text-primary);
-    font-size: var(--font-size-base);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-off-white);
+    color: var(--color-dark-gray);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    outline: none;
     appearance: none;
     -webkit-appearance: none;
-    outline: none;
 }
 
 input[type="number"]::placeholder {
-    color: var(--color-text-muted);
+    color: #AAAAAA;
 }
 
 input[type="number"]:hover,
 select:hover {
-    border-color: #9CA3AF;
+    border-color: #AAAAAA;
 }
 
 input[type="number"]:focus,
 select:focus {
-    border-color: var(--color-border-focus);
-    background-color: var(--color-surface);
-    box-shadow: var(--shadow-focus);
+    border-color: var(--color-green);
+    box-shadow: 0 0 0 3px rgba(16, 145, 84, 0.18);
+    background-color: #FFFFFF;
 }
 
-/* Supprime les flèches du champ number sur Chrome */
+/* Supprime les flèches number sur Chrome */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* Flèche personnalisée pour le select */
+/* Flèche personnalisée pour select */
 select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234B5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555555' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right var(--space-4) center;
-    padding-right: var(--space-10);
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
     cursor: pointer;
 }
 
 .field-hint {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    color: #888;
     line-height: 1.5;
 }
 
-/* Bouton de soumission */
+/* État invalide */
+input.is-invalid,
+select.is-invalid {
+    border-color: var(--color-error);
+    background-color: #FFF5F5;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.field-error {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-error);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.field-error::before {
+    content: '⚠';
+    font-size: 0.75rem;
+}
+
+/* Bouton calculer */
 #calculate-btn {
     display: block;
     width: 100%;
-    padding: var(--space-4) var(--space-6);
-    margin-top: var(--space-8);
-    background-color: var(--color-accent);
-    color: var(--color-text-primary);
-    font-size: var(--font-size-base);
+    padding: 1rem var(--space-6);
+    margin-top: var(--space-4);
+    background-color: var(--color-orange);
+    color: var(--color-dark-gray);
+    font-family: var(--font-title);
+    font-size: 1rem;
     font-weight: 700;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    letter-spacing: 0.01em;
-    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-    box-shadow: 0 2px 8px rgba(245, 166, 35, 0.35);
+    letter-spacing: 0.02em;
+    transition: background-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 4px 16px rgba(243, 156, 18, 0.40);
 }
 
 #calculate-btn:hover {
-    background-color: var(--color-accent-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(245, 166, 35, 0.45);
+    background-color: #E08A00;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(243, 156, 18, 0.55);
 }
 
 #calculate-btn:active {
     transform: translateY(0);
-    box-shadow: none;
-}
-
-#calculate-btn:focus-visible {
-    outline: 3px solid var(--color-primary);
-    outline-offset: 2px;
+    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.35);
 }
 
 
 /* --------------------------------------------------------------------------
-   9. GRILLE DE PRODUITS
+   6. GRILLE DE PRODUITS
    -------------------------------------------------------------------------- */
 
-#visual-container {
+#products-container {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: var(--space-5);
 }
 
-.visual-header h3 {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-2);
+.products-heading {
+    font-size: 1.375rem;
+    color: var(--color-navy);
 }
 
-.visual-subtitle {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+.products-subheading {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.5;
 }
 
 #product-grid {
@@ -453,44 +393,53 @@ select {
     }
 }
 
+@media (min-width: 768px) {
+    #product-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 @media (min-width: 1024px) {
     #product-grid {
         grid-template-columns: repeat(4, 1fr);
-        gap: var(--space-3);
+        gap: var(--space-4);
     }
 }
 
 /* Carte produit */
 .product-card {
     position: relative;
-    border-radius: var(--radius-lg);
     background-color: var(--color-surface);
-    border: 1.5px solid var(--color-border);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-border);
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
     overflow: hidden;
 }
 
+/* Survol : bordure orange vif */
 .product-card:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+    border-color: var(--color-orange);
+    box-shadow: 0 4px 20px rgba(243, 156, 18, 0.25);
+    transform: translateY(-3px);
 }
 
-/* État coché */
-.product-card:has(input:checked) {
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.25), var(--shadow-sm);
-    background-color: #FFFBF0;
+/* Sélectionné : bordure vert Approviz */
+.product-card.is-selected {
+    border-color: var(--color-green);
+    box-shadow: 0 4px 20px rgba(16, 145, 84, 0.22);
+    background-color: #F0FBF5;
 }
 
 .product-label {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--space-4) var(--space-3);
+    justify-content: center;
+    padding: var(--space-5) var(--space-3) var(--space-4);
     cursor: pointer;
     gap: var(--space-3);
     height: 100%;
+    position: relative;
 }
 
 /* Cache la checkbox native */
@@ -502,87 +451,91 @@ select {
     pointer-events: none;
 }
 
-/* Indicateur coché (coin supérieur droit) */
-.product-card::after {
-    content: '✓';
+.product-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    transition: transform var(--transition);
+    background-color: var(--color-bg-page);
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.07);
+}
+
+.product-name {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-dark-gray);
+    text-align: center;
+    line-height: 1.35;
+}
+
+/* Badge de sélection (coin supérieur droit) */
+.product-check {
     position: absolute;
-    top: var(--space-2);
-    right: var(--space-2);
+    top: 8px;
+    right: 8px;
     width: 22px;
     height: 22px;
-    background-color: var(--color-accent);
-    color: var(--color-text-primary);
-    border-radius: var(--radius-full);
+    background-color: var(--color-green);
+    color: #FFFFFF;
+    border-radius: 50%;
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transform: scale(0.6);
-    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    transform: scale(0.5);
+    transition: opacity var(--transition), transform var(--transition);
+    pointer-events: none;
+    line-height: 1;
 }
 
-.product-card:has(input:checked)::after {
+.product-card.is-selected .product-check {
     opacity: 1;
     transform: scale(1);
 }
 
-.product-img {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-    border-radius: var(--radius-md);
-    transition: transform var(--transition-fast);
-    /* Placeholder gris si image absente */
-    background-color: var(--color-bg);
+/* Message d'erreur produits */
+.error-msg {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-error);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
 }
 
-.product-card:hover .product-img {
-    transform: scale(1.05);
-}
-
-.product-name {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-text-primary);
-    text-align: center;
-    line-height: 1.4;
+.error-msg::before {
+    content: '⚠';
+    font-size: 0.85rem;
 }
 
 
 /* --------------------------------------------------------------------------
-   10. SECTION RÉSULTATS
+   7. SECTION RÉSULTATS
    -------------------------------------------------------------------------- */
 
 #results-section {
-    background-color: var(--color-bg);
-    padding: 0;
+    background-color: var(--color-navy);
+    padding: var(--space-12) var(--space-6);
 }
 
-#results-section .section-inner {
-    padding-top: 0;
-    padding-bottom: var(--space-16);
+.results-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    animation: fadeSlideUp 0.5s ease both;
 }
 
-/* Caché par défaut */
-#results-container {
-    display: none;
-    opacity: 0;
-    transform: translateY(var(--space-5));
-    transition: opacity var(--transition-slow), transform var(--transition-slow);
-}
-
-/* Affiché avec animation */
-#results-container.visible {
-    display: block;
-    animation: fadeSlideIn var(--transition-slow) forwards;
-}
-
-@keyframes fadeSlideIn {
+@keyframes fadeSlideUp {
     from {
         opacity: 0;
-        transform: translateY(var(--space-5));
+        transform: translateY(24px);
     }
     to {
         opacity: 1;
@@ -590,22 +543,21 @@ select {
     }
 }
 
-#results-container h2 {
-    font-size: var(--font-size-2xl);
-    font-weight: 800;
+#results-section h2 {
+    font-size: 2rem;
+    color: var(--color-off-white);
     text-align: center;
     margin-bottom: var(--space-3);
-    color: var(--color-text-primary);
 }
 
 .results-intro {
+    font-size: 1rem;
+    color: rgba(245, 245, 245, 0.70);
     text-align: center;
-    font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
     margin-bottom: var(--space-10);
 }
 
-/* Grille des résultats */
+/* Grille de cartes résultats */
 #results-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -621,129 +573,112 @@ select {
 
 /* Carte résultat */
 .result-card {
-    background-color: var(--color-surface);
-    border-radius: var(--radius-xl);
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-lg);
     padding: var(--space-8) var(--space-6);
-    border: 1.5px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--space-2);
     text-align: center;
 }
 
 .result-label {
-    font-size: var(--font-size-sm);
+    font-size: 0.8rem;
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: rgba(245, 245, 245, 0.65);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
 }
 
 .result-description {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
+    font-size: 0.82rem;
+    color: rgba(245, 245, 245, 0.45);
     line-height: 1.5;
 }
 
 .result-value {
-    font-size: var(--font-size-4xl);
-    font-weight: 800;
-    color: var(--color-primary);
+    font-family: var(--font-title);
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-off-white);
     letter-spacing: -0.03em;
     line-height: 1.1;
     margin-top: var(--space-3);
 }
 
 .result-unit {
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(245, 245, 245, 0.45);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
 }
 
-/* Carte total — variante accentuée */
+/* Carte totale : accentuée avec l'orange */
 .result-card--total {
-    background-color: var(--color-total-bg);
-    border-color: var(--color-total-bg);
-    box-shadow: var(--shadow-lg);
-}
-
-.result-card--total .result-label {
-    color: rgba(255, 255, 255, 0.70);
-}
-
-.result-card--total .result-description {
-    color: rgba(255, 255, 255, 0.55);
+    background-color: rgba(243, 156, 18, 0.10);
+    border-color: rgba(243, 156, 18, 0.40);
+    box-shadow: 0 0 40px rgba(243, 156, 18, 0.12);
 }
 
 .result-card--total .result-value {
-    color: var(--color-accent);
-}
-
-.result-card--total .result-unit {
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--color-orange);
+    font-size: 2.75rem;
 }
 
 
 /* --------------------------------------------------------------------------
-   11. CTA RÉSULTATS
+   8. CTA RÉSULTATS
    -------------------------------------------------------------------------- */
 
 #results-cta {
     text-align: center;
-    padding: var(--space-10) var(--space-6);
-    background-color: var(--color-surface);
-    border-radius: var(--radius-xl);
-    border: 1.5px solid var(--color-border);
-    box-shadow: var(--shadow-sm);
+    padding: var(--space-8);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: var(--radius-lg);
 }
 
 .cta-text {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-off-white);
     margin-bottom: var(--space-5);
 }
 
-.btn-primary {
+#cta-button {
     display: inline-block;
-    padding: var(--space-4) var(--space-8);
-    background-color: var(--color-accent);
-    color: var(--color-text-primary);
-    font-size: var(--font-size-base);
+    padding: 1rem 2.5rem;
+    background-color: var(--color-orange);
+    color: var(--color-dark-gray);
+    font-family: var(--font-title);
+    font-size: 1rem;
     font-weight: 700;
-    border-radius: var(--radius-md);
-    letter-spacing: 0.01em;
-    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-    box-shadow: 0 2px 8px rgba(245, 166, 35, 0.35);
-    cursor: pointer;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.02em;
+    transition: background-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 4px 20px rgba(243, 156, 18, 0.45);
 }
 
-.btn-primary:hover {
-    background-color: var(--color-accent-dark);
+#cta-button:hover {
+    background-color: #E08A00;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(245, 166, 35, 0.45);
+    box-shadow: 0 8px 32px rgba(243, 156, 18, 0.60);
 }
 
-.btn-primary:active {
+#cta-button:active {
     transform: translateY(0);
-}
-
-.btn-primary:focus-visible {
-    outline: 3px solid var(--color-primary);
-    outline-offset: 3px;
 }
 
 
 /* --------------------------------------------------------------------------
-   12. FOOTER
+   9. FOOTER
    -------------------------------------------------------------------------- */
 
 #site-footer {
-    background-color: var(--color-primary-dark);
-    color: rgba(255, 255, 255, 0.65);
+    background-color: #111820;
     padding: var(--space-8) var(--space-6);
 }
 
@@ -757,14 +692,14 @@ select {
 }
 
 .footer-legal {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: rgba(245, 245, 245, 0.55);
 }
 
 .footer-disclaimer {
-    font-size: var(--font-size-xs);
-    color: rgba(255, 255, 255, 0.40);
+    font-size: 0.78rem;
+    color: rgba(245, 245, 245, 0.35);
     max-width: 560px;
     margin: 0 auto;
     line-height: 1.6;
@@ -772,113 +707,7 @@ select {
 
 
 /* --------------------------------------------------------------------------
-   13. RESPONSIVE — AJUSTEMENTS DESKTOP
-   -------------------------------------------------------------------------- */
-
-@media (min-width: 1024px) {
-    #hero-title {
-        font-size: var(--font-size-4xl);
-    }
-
-    .hero-subtitle {
-        font-size: var(--font-size-xl);
-    }
-
-    #estimator-section .section-inner {
-        padding-top: var(--space-16);
-        padding-bottom: var(--space-16);
-    }
-}
-
-
-/* --------------------------------------------------------------------------
-   14. ÉTATS DE VALIDATION DU FORMULAIRE
-   -------------------------------------------------------------------------- */
-
-/* État d'erreur sur un champ (classe ajoutée par JS) */
-input.is-invalid,
-select.is-invalid {
-    border-color: #EF4444;
-    background-color: #FFF5F5;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
-}
-
-input.is-invalid:focus,
-select.is-invalid:focus {
-    border-color: #DC2626;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.20);
-}
-
-/* Message d'erreur affiché sous le champ */
-.field-error-msg {
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-    color: #DC2626;
-    line-height: 1.5;
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-}
-
-.field-error-msg::before {
-    content: '⚠';
-    font-size: 11px;
-    flex-shrink: 0;
-}
-
-/* Message d'erreur sous la grille de produits */
-.products-error-msg {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: #DC2626;
-    margin-top: var(--space-3);
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-}
-
-.products-error-msg::before {
-    content: '⚠';
-    font-size: 13px;
-    flex-shrink: 0;
-}
-
-/* Bouton désactivé */
-#calculate-btn:disabled {
-    background-color: #E5E7EB;
-    color: #9CA3AF;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-
-#calculate-btn:disabled:hover {
-    background-color: #E5E7EB;
-    transform: none;
-    box-shadow: none;
-}
-
-
-/* --------------------------------------------------------------------------
-   15. ACCESSIBILITÉ — FOCUS VISIBLE GLOBAL
-   -------------------------------------------------------------------------- */
-
-:focus-visible {
-    outline: 3px solid var(--color-primary);
-    outline-offset: 2px;
-    border-radius: var(--radius-sm);
-}
-
-/* Retire l'outline sur focus souris (non-clavier) */
-:focus:not(:focus-visible) {
-    outline: none;
-}
-
-
-/* --------------------------------------------------------------------------
-   16. PRÉFÉRENCE : MOUVEMENT RÉDUIT
-   Pour les utilisateurs qui préfèrent limiter les animations
-   (accessibilité, économie de batterie, sensibilité au mouvement).
+   10. PRÉFÉRENCE : MOUVEMENT RÉDUIT
    -------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -889,11 +718,5 @@ select.is-invalid:focus {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
-    }
-
-    /* Le compteur sera géré côté JS — voir animateCounter() dans main.js */
-    #results-container.visible {
-        opacity: 1;
-        transform: none;
     }
 }
